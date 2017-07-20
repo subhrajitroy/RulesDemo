@@ -6,6 +6,7 @@ namespace WorkflowFoundationRules
     public interface IFactBuilder
     {
         Fact Build(string name, object value);
+        Fact Build(RawFact rawFact);
     }
 
     public class IntegerFactBuilder : IFactBuilder
@@ -16,6 +17,10 @@ namespace WorkflowFoundationRules
             return new Fact(name,integerValue);
         }
 
+        public Fact Build(RawFact rawFact)
+        {
+            return Build(rawFact.Name, rawFact.Value);
+        }
     }
 
     public class StringFactBuilder : IFactBuilder
@@ -24,6 +29,10 @@ namespace WorkflowFoundationRules
         {
             var stringFactValue = new StringFactValue(value.ToString());
             return new Fact(name,stringFactValue);
+        }
+        public Fact Build(RawFact rawFact)
+        {
+            return Build(rawFact.Name, rawFact.Value);
         }
     }
 }
