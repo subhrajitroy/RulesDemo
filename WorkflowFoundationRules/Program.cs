@@ -21,7 +21,7 @@ namespace WorkflowFoundationRules
         {
             // Obtain or create ruleset
             var fileBaseRulesRepository = new FileBaseRulesRepository();
-            var @event = ReadJsonFromFile(args[0]);
+            var @event = ReadJsonFromFile(args.Length == 0 ? "das.event.txt":args[0]);
             var ruleSetName = @event.SourceId;
             var ruleSetFile = _rules[ruleSetName];
 

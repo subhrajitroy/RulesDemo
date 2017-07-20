@@ -1,0 +1,12 @@
+﻿{
+  "ruleset": [
+    {
+      "name": "Rule1",
+      "priority": 1,
+      "fact": "\"this.Get(\"Temparature\").Value.GreaterThan(10)\"",
+      "then": "System.Console.WriteLine(\"ALARM\")",
+      "else": "System.Console.WriteLine(\"OK\")"
+    }
+  ]
+}
+
