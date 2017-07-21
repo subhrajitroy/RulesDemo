@@ -10,6 +10,7 @@
 
         public string Name { get; set; }
         public IFactValue Value { get; set; }
+
     }
 
     public interface IFact

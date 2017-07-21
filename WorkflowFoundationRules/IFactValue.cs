@@ -8,5 +8,6 @@
         bool GreaterThan(object other);
 
         bool LessThan(object other);
+
     }
 }

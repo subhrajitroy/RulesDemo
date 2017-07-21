@@ -28,5 +28,20 @@ namespace WorkflowFoundationRules
         {
             return _dictionary.ContainsKey(key) ? _dictionary[key].Value : null;
         }
+
+        public bool HasFactWithEqualValue(string factName, object value)
+        {
+            return Get(factName).Equals(value);
+        }
+
+        public bool HasFactWithGreaterValue(string factName, object value)
+        {
+            return Get(factName).GreaterThan(value);
+        }
+
+        public bool HasFactWithLesserValue(string factName, object value)
+        {
+            return Get(factName).LessThan(value);
+        }
     }
 }
