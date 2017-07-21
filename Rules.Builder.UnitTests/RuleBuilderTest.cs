@@ -7,6 +7,8 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using Rules.Authoring;
 using Rules.Domain;
@@ -39,10 +41,13 @@ namespace Rules.Builder.UnitTests
 
             var triggerAction = new TriggerAction();
             triggerAction.Name = "Trigger Alarm";
-            triggerAction.ActionDetail = emailActionDetail;
+            triggerAction.ActionDetail 
+                = JsonConvert.DeserializeObject<JObject>(JsonConvert.SerializeObject(emailActionDetail));
             
             rule.ActionDetails.Add(triggerAction);
             ruleSet.Rules.Add(rule);
+
+            File.WriteAllText("C:\\Honeywell\\granite.rules",ruleSet.ToString());
 
             var workflowRuleSet = new RuleBuilder().Build(ruleSet);
             Assert.That(workflowRuleSet.Rules.Count,Is.EqualTo(1));

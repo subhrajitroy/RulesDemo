@@ -33,6 +33,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="CommandLine, Version=1.9.71.2, Culture=neutral, PublicKeyToken=de6f01bd326f8c32, processorArchitecture=MSIL">
+      <HintPath>..\packages\CommandLineParser.1.9.71\lib\net45\CommandLine.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -61,9 +64,11 @@
     <Compile Include="Fact.cs" />
     <Compile Include="FactBuilder.cs" />
     <Compile Include="Facts.cs" />
+    <Compile Include="FileBasedRuleAuthoringTool.cs" />
     <Compile Include="IFactValue.cs" />
     <Compile Include="IntegerFactValue.cs" />
     <Compile Include="IRulesRepository.cs" />
+    <Compile Include="Options.cs" />
     <Compile Include="Person.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -75,6 +80,16 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Rules.Authoring\Rules.Authoring.csproj">
+      <Project>{E748978C-61AD-4C81-AF82-1489AE37E80B}</Project>
+      <Name>Rules.Authoring</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Rules.Domain\Rules.Domain.csproj">
+      <Project>{AFF0584E-0241-4190-9635-DD3C3C77E60E}</Project>
+      <Name>Rules.Domain</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

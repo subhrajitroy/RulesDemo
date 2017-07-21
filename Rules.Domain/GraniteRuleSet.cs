@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Rules.Domain
 {
@@ -22,6 +24,11 @@ namespace Rules.Domain
         public string Version { get; set; }
 
         public DateTime LastUpdated { get; set; }
+
+        public override string ToString()
+        {
+            return JsonConvert.SerializeObject(this);
+        }
     }
 
     public class GraniteRule
@@ -46,7 +53,12 @@ namespace Rules.Domain
 
         public ActionSchedule Schedule { get; set; }
 
-        public IActionDetail ActionDetail { get; set; }
+        public JObject ActionDetail { get; set; }
+
+        public override string ToString()
+        {
+            return JsonConvert.SerializeObject(this);
+        }
     }
 
     public interface IActionDetail

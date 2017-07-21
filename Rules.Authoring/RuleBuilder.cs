@@ -19,19 +19,24 @@ namespace Rules.Authoring
             var conditionExpression = graniteRule.Condition;
 
             var ruleSet = new RuleSet { ChainingBehavior = RuleChainingBehavior.Full };
+            ruleSet.Name = graniteRuleSet.Name;
 
             var rule = new Rule
             {
                 Active = true,
-                Condition = new RuleExpressionCondition(GetCodeInvocation(conditionExpression))
+                Name = graniteRule.Name,
+                Condition = new RuleExpressionCondition(GetCodeExpression(conditionExpression))
             };
-            rule.ThenActions.Add(new RuleStatementAction());
-            rule.ElseActions.Add(new RuleStatementAction());
+            graniteRule.ActionDetails.ForEach(trigger =>
+            {
+                rule.ThenActions.Add(new RuleStatementAction(GetCodeExpression($"this.Publish(\"Publishing Action :{trigger.Name}\")")));
+            });
+            rule.ElseActions.Add(new RuleStatementAction(GetCodeExpression("this.Publish(\"No action required\")")));
             ruleSet.Rules.Add(rule);
             return ruleSet;
         }
 
-        private CodeMethodInvokeExpression GetCodeInvocation(string conditionExpression)
+        private CodeMethodInvokeExpression GetCodeExpression(string conditionExpression)
         {
             var methodDetails = GetMethodDetails(conditionExpression);
             
@@ -52,27 +57,30 @@ namespace Rules.Authoring
            // var rule = "this.HasFactWithEqualValue(\"State\",\"Alarm\")";
             var invocations = rule.Split('.');
             var methodNameWithArguments = invocations[1];
-            var indexOfOpeningBrace = methodNameWithArguments.IndexOf("(");
-            var lastIndexOfClosingBrace = methodNameWithArguments.LastIndexOf(")");
-            var methodName = methodNameWithArguments.Substring(0, indexOfOpeningBrace);
+            var startIndexOfOpeningBrace = methodNameWithArguments.IndexOf("(", StringComparison.Ordinal);
+            var lastIndexOfClosingBrace = methodNameWithArguments.LastIndexOf(")", StringComparison.Ordinal);
+            var methodName = methodNameWithArguments.Substring(0, startIndexOfOpeningBrace);
 
             var arguments
-                = methodNameWithArguments.Substring(indexOfOpeningBrace + 1, lastIndexOfClosingBrace - indexOfOpeningBrace);
-
+                = methodNameWithArguments.Substring(startIndexOfOpeningBrace + 1, lastIndexOfClosingBrace - startIndexOfOpeningBrace - 1);
             var methodInfo = new MethodInfo();
             methodInfo.Name = methodName;
             foreach (var argument in arguments.Split(','))
             {
-                methodInfo.Parameters.Add(argument.ToString().Trim('"'));
+                methodInfo.Parameters.Add(argument.Trim('\"'));
             }
             return methodInfo;
         }
 
-        private class MethodInfo
+        internal class MethodInfo
         {
+            internal MethodInfo()
+            {
+                Parameters = new List<object>();
+            }
             internal string Name { get; set; }
 
-            internal  List<object> Parameters { get; set; }
+            internal  List<object> Parameters { get; }
         }
     }
 
