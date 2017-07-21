@@ -1,0 +1,15 @@
+{
+    "sourceId" : "das",
+    "facts":[
+        {
+            "name":"State",
+            "value":"Alarm",
+            "type" : "string"
+        },
+        {
+           "name":"criticalSensors",
+           "value": 14,
+           "type": "int"
+        }
+    ]
+}
