@@ -22,6 +22,7 @@ namespace Rules.Builder.UnitTests
         public void ShouldBuildExpectedRule()
         {
             var condition = "this.HasFactWithEqualValue(\"State\",\"Alarm\")";
+            var cond2 = "this.HasFactWithGreaterValue(\"criticalSensors\",10)";
             var ruleSet = new GraniteRuleSet();
             ruleSet.Id = Guid.NewGuid();
             ruleSet.IsActive = true;
@@ -31,7 +32,7 @@ namespace Rules.Builder.UnitTests
             ruleSet.Version = "0.0.0.1";
             var rule = new GraniteRule();
             rule.Id = Guid.NewGuid();
-            rule.Condition = condition;
+            rule.Condition = cond2;
             rule.IsActive = true;
             rule.Name = "Alarm trigger rule";
 

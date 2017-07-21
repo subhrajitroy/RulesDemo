@@ -15,12 +15,21 @@ namespace Rules.Authoring
 
         public RuleSet Build(GraniteRuleSet graniteRuleSet)
         {
-            var graniteRule = graniteRuleSet.Rules.First();
+            var ruleSet = new RuleSet
+            {
+                ChainingBehavior = RuleChainingBehavior.Full,
+                Name = graniteRuleSet.Name
+            };
+            var rules = graniteRuleSet.Rules.Select(Parse).ToList();
+            rules.ForEach(r => ruleSet.Rules.Add(r));
+            return ruleSet;
+        }
+
+        private Rule Parse(GraniteRule graniteRule)
+        {
             var conditionExpression = graniteRule.Condition;
 
-            var ruleSet = new RuleSet { ChainingBehavior = RuleChainingBehavior.Full };
-            ruleSet.Name = graniteRuleSet.Name;
-
+           
             var rule = new Rule
             {
                 Active = true,
@@ -29,11 +38,12 @@ namespace Rules.Authoring
             };
             graniteRule.ActionDetails.ForEach(trigger =>
             {
-                rule.ThenActions.Add(new RuleStatementAction(GetCodeExpression($"this.Publish(\"Publishing Action :{trigger.Name}\")")));
+                var codeExpression = $"this.Publish(\"Publishing Action :{trigger.Name}\")";
+                rule.ThenActions.Add(new RuleStatementAction(
+                    GetCodeExpression(codeExpression)));
             });
             rule.ElseActions.Add(new RuleStatementAction(GetCodeExpression("this.Publish(\"No action required\")")));
-            ruleSet.Rules.Add(rule);
-            return ruleSet;
+            return rule;
         }
 
         private CodeMethodInvokeExpression GetCodeExpression(string conditionExpression)
@@ -55,12 +65,10 @@ namespace Rules.Authoring
         private MethodInfo GetMethodDetails(string rule)
         {
            // var rule = "this.HasFactWithEqualValue(\"State\",\"Alarm\")";
-            var invocations = rule.Split('.');
-            var methodNameWithArguments = invocations[1];
+            var methodNameWithArguments = rule.Remove(0, "this.".Length);
             var startIndexOfOpeningBrace = methodNameWithArguments.IndexOf("(", StringComparison.Ordinal);
             var lastIndexOfClosingBrace = methodNameWithArguments.LastIndexOf(")", StringComparison.Ordinal);
             var methodName = methodNameWithArguments.Substring(0, startIndexOfOpeningBrace);
-
             var arguments
                 = methodNameWithArguments.Substring(startIndexOfOpeningBrace + 1, lastIndexOfClosingBrace - startIndexOfOpeningBrace - 1);
             var methodInfo = new MethodInfo();
