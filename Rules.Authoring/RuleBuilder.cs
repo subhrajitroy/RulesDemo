@@ -12,22 +12,35 @@ namespace Rules.Authoring
     public class RuleBuilder : IRuleBuilder
     {
 
-        public RuleSet Build(string condition)
+        public RuleSet Build(string conditionExpression)
         {
-            var methodDetails = GetMethodDetails(condition);
-            var ruleSet = new RuleSet {ChainingBehavior = RuleChainingBehavior.Full};
+            var ruleSet = new RuleSet { ChainingBehavior = RuleChainingBehavior.Full };
 
-            var rule = new Rule {Active = true};
+            var rule = new Rule
+            {
+                Active = true,
+                Condition = new RuleExpressionCondition(GetCodeInvocation(conditionExpression))
+            };
+            rule.ThenActions.Add(new RuleStatementAction());
+            rule.ElseActions.Add(new RuleStatementAction());
+            ruleSet.Rules.Add(rule);
+            return ruleSet;
+        }
+
+        private CodeMethodInvokeExpression GetCodeInvocation(string conditionExpression)
+        {
+            var methodDetails = GetMethodDetails(conditionExpression);
+            
             var codeMethodReferenceExpression = new CodeMethodReferenceExpression
             {
                 TargetObject = new CodeThisReferenceExpression(),
                 MethodName = methodDetails.Name
             };
-            var parameters = methodDetails.Parameters.Select(methodDetailsParameter => new CodePrimitiveExpression(methodDetailsParameter)).Cast<CodeExpression>().ToList();
-            var codeMethodInvokeExpression = new CodeMethodInvokeExpression(codeMethodReferenceExpression,parameters.ToArray());
-            rule.Condition = new RuleExpressionCondition(codeMethodInvokeExpression);
-            ruleSet.Rules.Add(rule);
-            return ruleSet;
+            var parameters =
+                methodDetails.Parameters.Select(methodDetailsParameter => new CodePrimitiveExpression(methodDetailsParameter))
+                    .Cast<CodeExpression>()
+                    .ToList();
+           return new CodeMethodInvokeExpression(codeMethodReferenceExpression, parameters.ToArray());
         }
 
         private MethodInfo GetMethodDetails(string rule)
@@ -61,6 +74,6 @@ namespace Rules.Authoring
 
     public interface IRuleBuilder
     {
-        RuleSet Build(string condition);
+        RuleSet Build(string conditionExpression);
     }
 }
