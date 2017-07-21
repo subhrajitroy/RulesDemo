@@ -6,14 +6,18 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Workflow.Activities.Rules;
 using System.Workflow.Activities.Rules.Design;
+using Rules.Domain;
 
 namespace Rules.Authoring
 {
     public class RuleBuilder : IRuleBuilder
     {
 
-        public RuleSet Build(string conditionExpression)
+        public RuleSet Build(GraniteRuleSet graniteRuleSet)
         {
+            var graniteRule = graniteRuleSet.Rules.First();
+            var conditionExpression = graniteRule.Condition;
+
             var ruleSet = new RuleSet { ChainingBehavior = RuleChainingBehavior.Full };
 
             var rule = new Rule
@@ -57,7 +61,7 @@ namespace Rules.Authoring
 
             var methodInfo = new MethodInfo();
             methodInfo.Name = methodName;
-            foreach (var argument in arguments)
+            foreach (var argument in arguments.Split(','))
             {
                 methodInfo.Parameters.Add(argument.ToString().Trim('"'));
             }
@@ -74,6 +78,6 @@ namespace Rules.Authoring
 
     public interface IRuleBuilder
     {
-        RuleSet Build(string conditionExpression);
+        RuleSet Build(GraniteRuleSet graniteRuleSet);
     }
 }

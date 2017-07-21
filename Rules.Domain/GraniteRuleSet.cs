@@ -5,6 +5,10 @@ namespace Rules.Domain
 {
     public class GraniteRuleSet
     {
+        public GraniteRuleSet()
+        {
+            Rules = new List<GraniteRule>();
+        }
         public string Name { get; set; }
 
         public Guid Id { get; set; }
@@ -22,6 +26,10 @@ namespace Rules.Domain
 
     public class GraniteRule
     {
+        public GraniteRule()
+        {
+            ActionDetails = new List<TriggerAction>();
+        }
         public string Name { get; set; }
         public Guid Id { get; set; }
 
@@ -29,7 +37,7 @@ namespace Rules.Domain
 
         public bool IsActive { get; set; }
 
-        public List<IActionDetail> ActionDetails { get; set; }
+        public List<TriggerAction> ActionDetails { get; }
     }
 
     public class TriggerAction
@@ -59,6 +67,10 @@ namespace Rules.Domain
 
     public class EmailActionDetail : NotificationActionDetail
     {
+        public EmailActionDetail()
+        {
+            Receivers = new List<IReceiver>();
+        }
         public override List<IReceiver> Receivers { get; }
         public override NotificationType NotificationType => NotificationType.EMAIL;
     }

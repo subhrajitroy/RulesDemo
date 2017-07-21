@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace WorkflowFoundationRules
 {
@@ -42,6 +43,11 @@ namespace WorkflowFoundationRules
         public bool HasFactWithLesserValue(string factName, object value)
         {
             return Get(factName).LessThan(value);
+        }
+
+        public void Print(string message)
+        {
+            Console.WriteLine(message);
         }
     }
 }

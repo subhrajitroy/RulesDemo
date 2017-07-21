@@ -44,5 +44,11 @@
     <Compile Include="RuleBuilder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Rules.Domain\Rules.Domain.csproj">
+      <Project>{AFF0584E-0241-4190-9635-DD3C3C77E60E}</Project>
+      <Name>Rules.Domain</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

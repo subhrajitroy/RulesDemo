@@ -9,6 +9,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using Rules.Authoring;
+using Rules.Domain;
 
 namespace Rules.Builder.UnitTests
 {
@@ -18,25 +19,33 @@ namespace Rules.Builder.UnitTests
         [Test]
         public void ShouldBuildExpectedRule()
         {
-            var rule = "this.HasFactWithEqualValue(\"State\",\"Alarm\")";
-            var invocations = rule.Split('.');
-            var methodNameWithArguments = invocations[1];
-            var indexOfOpeningBrace = methodNameWithArguments.IndexOf("(");
-            var lastIndexOfClosingBrace = methodNameWithArguments.LastIndexOf(")");
-            var methodName = methodNameWithArguments.Substring(0, indexOfOpeningBrace);
+            var condition = "this.HasFactWithEqualValue(\"State\",\"Alarm\")";
+            var ruleSet = new GraniteRuleSet();
+            ruleSet.Id = Guid.NewGuid();
+            ruleSet.IsActive = true;
+            ruleSet.LastUpdated = DateTime.Now;
+            ruleSet.LastUpdatedBy = "me@me.com";
+            ruleSet.Name = "Single Device Rule";
+            ruleSet.Version = "0.0.0.1";
+            var rule = new GraniteRule();
+            rule.Id = Guid.NewGuid();
+            rule.Condition = condition;
+            rule.IsActive = true;
+            rule.Name = "Alarm trigger rule";
 
-            var arguments 
-                = methodNameWithArguments.Substring(indexOfOpeningBrace+1,lastIndexOfClosingBrace - indexOfOpeningBrace);
+            var emailActionDetail = new EmailActionDetail();
+            emailActionDetail.Receivers.Add(new UserEmail("user@gmail.com"));
 
-            var args = arguments.Split(',');
-            Assert.AreEqual("HasFactWithEqualValue", methodName);
-            Assert.AreEqual("State",args[0].Trim('"'));
 
-//            var methodReferenceExpression = new CodeMethodReferenceExpression(new CodeThisReferenceExpression(), "Get");
-//            var methodInvokeExpression = new CodeMethodInvokeExpression(methodReferenceExpression, new CodeExpression[] { new CodePrimitiveExpression("State") });
-//            var codeMethodReferenceExpression = new CodeMethodReferenceExpression(methodInvokeExpression, "Equals");
-//            var codeMethodInvokeExpression = new CodeMethodInvokeExpression(codeMethodReferenceExpression,new CodeExpression[]{new CodePrimitiveExpression("Alarm")});
-//            Console.WriteLine(codeMethodInvokeExpression);
+            var triggerAction = new TriggerAction();
+            triggerAction.Name = "Trigger Alarm";
+            triggerAction.ActionDetail = emailActionDetail;
+            
+            rule.ActionDetails.Add(triggerAction);
+            ruleSet.Rules.Add(rule);
+
+            var workflowRuleSet = new RuleBuilder().Build(ruleSet);
+            Assert.That(workflowRuleSet.Rules.Count,Is.EqualTo(1));
         }
 
 
