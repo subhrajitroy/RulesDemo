@@ -51,6 +51,12 @@ namespace Rules.Domain
     {
         public String Name { get; set; }
 
+        public Guid Id { get; set; }
+
+        public Guid ExecutorId { get; set; }
+
+        public ActionType ActionType { get; set; }
+
         public ActionSchedule Schedule { get; set; }
 
         public JObject ActionDetail { get; set; }
@@ -63,8 +69,6 @@ namespace Rules.Domain
 
     public interface IActionDetail
     {
-        ActionType Type { get; }
-
         List<IReceiver> Receivers { get; }
     }
 
@@ -127,6 +131,12 @@ namespace Rules.Domain
 
     public class ActionSchedule
     {
+
+        public ActionSchedule()
+        {
+            StartTime = DateTime.Now;;
+            Frequency = 1;
+        }
         public DateTime StartTime { get; set; }
 
         public int Frequency { get; set; }

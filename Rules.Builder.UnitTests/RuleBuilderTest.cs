@@ -36,22 +36,43 @@ namespace Rules.Builder.UnitTests
             rule.IsActive = true;
             rule.Name = "Alarm trigger rule";
 
+            var triggerAction = GetTriggerAction();
+
+            rule.ActionDetails.Add(triggerAction);
+            ruleSet.Rules.Add(rule);
+
+            var currentContextWorkDirectory = TestContext.CurrentContext.WorkDirectory;
+
+            File.WriteAllText($"{currentContextWorkDirectory}\\granite.rules",ruleSet.ToString());
+
+            var workflowRuleSet = new RuleBuilder().Build(ruleSet);
+            Assert.That(workflowRuleSet.Rules.Count,Is.EqualTo(1));
+        }
+
+        [Test]
+        public void GenerateTriggerAction()
+        {
+            var actionAsJson = JsonConvert.SerializeObject(GetTriggerAction(),Formatting.Indented);
+            var currentContextWorkDirectory = TestContext.CurrentContext.WorkDirectory;
+            Console.WriteLine(currentContextWorkDirectory);
+            File.WriteAllText($"{currentContextWorkDirectory}\\action.json",actionAsJson);
+        }
+
+        private static TriggerAction GetTriggerAction()
+        {
+            var triggerAction = new TriggerAction();
+            triggerAction.Name = "Trigger Alarm";
+            triggerAction.ActionType = ActionType.Notification;
+            triggerAction.ExecutorId = Guid.NewGuid();
+            triggerAction.Schedule = new ActionSchedule();
+
             var emailActionDetail = new EmailActionDetail();
             emailActionDetail.Receivers.Add(new UserEmail("user@gmail.com"));
 
 
-            var triggerAction = new TriggerAction();
-            triggerAction.Name = "Trigger Alarm";
-            triggerAction.ActionDetail 
+            triggerAction.ActionDetail
                 = JsonConvert.DeserializeObject<JObject>(JsonConvert.SerializeObject(emailActionDetail));
-            
-            rule.ActionDetails.Add(triggerAction);
-            ruleSet.Rules.Add(rule);
-
-            File.WriteAllText("C:\\Honeywell\\granite.rules",ruleSet.ToString());
-
-            var workflowRuleSet = new RuleBuilder().Build(ruleSet);
-            Assert.That(workflowRuleSet.Rules.Count,Is.EqualTo(1));
+            return triggerAction;
         }
 
 
