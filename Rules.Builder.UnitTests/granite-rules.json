@@ -1,0 +1,52 @@
+﻿{
+  "Name": "Single Device Rule",
+  "Id": "3cba6f28-60dc-45c7-91c3-950248ea48fe",
+  "Rules": [
+    {
+      "Name": "Alarm trigger rule",
+      "Id": "d3100a21-3fe4-41b8-b7a9-6b6ff27d312d",
+      "Condition": {
+        "Operator": "And",
+        "Conditions": [
+          {
+            "Property": "status",
+            "Op": "Eq",
+            "Value": "Alarm"
+          },
+          {
+            "Property": "criticalSensor",
+            "Op": ">",
+            "Value": 5
+          }
+        ]
+      },
+      "IsActive": true,
+      "ActionDetails": [
+        {
+          "Name": "Trigger Alarm",
+          "Schedule": {
+            "ScheduleOn": "ISO-8601 Datetime",
+            "RetryCount" :  "3" 
+          },
+          "ActionDetail": {
+            "Type" :  "Notification",
+            "Receivers": [
+              {
+                "Address": "user@gmail.com",
+                "Channel": "email"
+              },
+              {
+                "Address": "+919867455",
+                "Channel": "sms"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "LastUpdatedBy": "me@me.com",
+  "IsActive": true,
+  "Version": "0.0.0.1",
+  "LastUpdated": "2017-07-25T12:23:52.3337584+05:30"
+}

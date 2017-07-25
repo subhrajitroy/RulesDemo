@@ -13,17 +13,18 @@ namespace Rules.Authoring
     public class RuleBuilder : IRuleBuilder
     {
 
-        public RuleSet Build(GraniteRuleSet graniteRuleSet)
+        public RuleSet Build(NRuleSet nRuleSet)
         {
-            var graniteRule = graniteRuleSet.Rules.First();
-            var conditionExpression = graniteRule.Condition;
+            var nRule = nRuleSet.Rules.First();
+            var conditionExpression = nRule.Condition;
 
             var ruleSet = new RuleSet { ChainingBehavior = RuleChainingBehavior.Full };
 
             var rule = new Rule
             {
                 Active = true,
-                Condition = new RuleExpressionCondition(GetCodeInvocation(conditionExpression))
+                //TODO:condition has been changed to AggregateCondition, this method needs to change
+                Condition = new RuleExpressionCondition(GetCodeInvocation(""))
             };
             rule.ThenActions.Add(new RuleStatementAction());
             rule.ElseActions.Add(new RuleStatementAction());
@@ -78,6 +79,6 @@ namespace Rules.Authoring
 
     public interface IRuleBuilder
     {
-        RuleSet Build(GraniteRuleSet graniteRuleSet);
+        RuleSet Build(NRuleSet nRuleSet);
     }
 }

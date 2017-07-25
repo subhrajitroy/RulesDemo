@@ -40,8 +40,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GraniteRuleSet.cs" />
+    <Compile Include="AggregateCondition.cs" />
+    <Compile Include="Condition.cs" />
+    <Compile Include="ConditionOperator.cs" />
+    <Compile Include="NRuleSet.cs" />
+    <Compile Include="ICondition.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\WorkflowFoundationRules\WorkflowFoundationRules.csproj">
+      <Project>{789279F8-0DDB-43DD-8522-C645D02FADD9}</Project>
+      <Name>WorkflowFoundationRules</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

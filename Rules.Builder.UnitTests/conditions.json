@@ -1,0 +1,25 @@
+﻿{
+  "Op": "And",
+  "conditions": [
+    {
+      "property": "status",
+      "value": "Alarm",
+      "op": "Equals"
+    },
+    {
+      "Op": "Or",
+      "conditions": [
+        {
+          "property": "sensors",
+          "value": 4,
+          "op": ">"
+        },
+        {
+          "property": "faults",
+          "value": 3,
+          "op": "<="
+        }
+      ]
+    }
+  ]
+}

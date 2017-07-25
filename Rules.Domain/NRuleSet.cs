@@ -1,19 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using Rules.Authoring;
 
 namespace Rules.Domain
 {
-    public class GraniteRuleSet
+    public class NRuleSet
     {
-        public GraniteRuleSet()
+        public NRuleSet()
         {
-            Rules = new List<GraniteRule>();
+            Rules = new List<NRule>();
         }
         public string Name { get; set; }
 
         public Guid Id { get; set; }
 
-        public List<GraniteRule> Rules { get; set; }
+        public List<NRule> Rules { get; set; }
 
         public String LastUpdatedBy { get; set; }
 
@@ -24,16 +25,16 @@ namespace Rules.Domain
         public DateTime LastUpdated { get; set; }
     }
 
-    public class GraniteRule
+    public class NRule
     {
-        public GraniteRule()
+        public NRule()
         {
             ActionDetails = new List<TriggerAction>();
         }
         public string Name { get; set; }
         public Guid Id { get; set; }
 
-        public string Condition { get; set; }
+        public AggregateCondition Condition { get; set; }
 
         public bool IsActive { get; set; }
 
