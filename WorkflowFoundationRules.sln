@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26403.7
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorkflowFoundationRules", "WorkflowFoundationRules\WorkflowFoundationRules.csproj", "{789279F8-0DDB-43DD-8522-C645D02FADD9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rules.Client", "WorkflowFoundationRules\Rules.Client.csproj", "{789279F8-0DDB-43DD-8522-C645D02FADD9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rules.Authoring", "Rules.Authoring\Rules.Authoring.csproj", "{E748978C-61AD-4C81-AF82-1489AE37E80B}"
 EndProject

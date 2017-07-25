@@ -45,7 +45,7 @@ namespace WorkflowFoundationRules
             return Get(factName).LessThan(value);
         }
 
-        public void Print(string message)
+        public void Publish(string message)
         {
             Console.WriteLine(message);
         }

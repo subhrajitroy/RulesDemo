@@ -8,6 +8,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using Rules.Authoring;
 using Rules.Domain;
@@ -21,6 +22,7 @@ namespace Rules.Builder.UnitTests
         public void ShouldBuildExpectedRule()
         {
             var condition = "this.HasFactWithEqualValue(\"State\",\"Alarm\")";
+
             var ruleSet = GetRuleSet();
 
             var workflowRuleSet = new RuleBuilder().Build(ruleSet);
@@ -36,6 +38,8 @@ namespace Rules.Builder.UnitTests
         private static NRuleSet GetRuleSet()
         {
             var ruleSet = new NRuleSet();
+            var cond2 = "this.HasFactWithGreaterValue(\"criticalSensors\",10)";
+
             ruleSet.Id = Guid.NewGuid();
             ruleSet.IsActive = true;
             ruleSet.LastUpdated = DateTime.Now;
@@ -48,18 +52,13 @@ namespace Rules.Builder.UnitTests
             rule.IsActive = true;
             rule.Name = "Alarm trigger rule";
 
-            var emailActionDetail = new EmailActionDetail();
-            emailActionDetail.Receivers.Add(new UserEmail("user@gmail.com"));
-
-
-            var triggerAction = new TriggerAction();
-            triggerAction.Name = "Trigger Alarm";
-            triggerAction.ActionDetail = emailActionDetail;
+            var triggerAction = GetTriggerAction();
 
             rule.ActionDetails.Add(triggerAction);
             ruleSet.Rules.Add(rule);
             return ruleSet;
         }
+
 
         private static AggregateCondition RuleCondition()
         {
@@ -74,6 +73,33 @@ namespace Rules.Builder.UnitTests
                     Property = "status",Op = "Equals",Value = "Alarm"
                 } }
             };
+
+        }
+
+        [Test]
+        public void GenerateTriggerAction()
+        {
+            var actionAsJson = JsonConvert.SerializeObject(GetTriggerAction(),Formatting.Indented);
+            var currentContextWorkDirectory = TestContext.CurrentContext.WorkDirectory;
+            Console.WriteLine(currentContextWorkDirectory);
+            File.WriteAllText($"{currentContextWorkDirectory}\\action.json",actionAsJson);
+        }
+
+        private static TriggerAction GetTriggerAction()
+        {
+            var triggerAction = new TriggerAction();
+            triggerAction.Name = "Trigger Alarm";
+            triggerAction.ActionType = ActionType.Notification;
+            triggerAction.ExecutorId = Guid.NewGuid();
+            triggerAction.Schedule = new ActionSchedule();
+
+            var emailActionDetail = new EmailActionDetail();
+            emailActionDetail.Receivers.Add(new UserEmail("user@gmail.com"));
+
+
+            triggerAction.ActionDetail
+                = JsonConvert.DeserializeObject<JObject>(JsonConvert.SerializeObject(emailActionDetail));
+            return triggerAction;
         }
 
 

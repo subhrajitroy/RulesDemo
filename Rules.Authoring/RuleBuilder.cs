@@ -15,24 +15,41 @@ namespace Rules.Authoring
 
         public RuleSet Build(NRuleSet nRuleSet)
         {
-            var nRule = nRuleSet.Rules.First();
-            var conditionExpression = nRule.Condition;
-
-            var ruleSet = new RuleSet { ChainingBehavior = RuleChainingBehavior.Full };
-
-            var rule = new Rule
+            var ruleSet = new RuleSet
             {
-                Active = true,
-                //TODO:condition has been changed to AggregateCondition, this method needs to change
-                Condition = new RuleExpressionCondition(GetCodeInvocation(""))
+                ChainingBehavior = RuleChainingBehavior.Full,
+                Name = nRuleSet.Name
             };
-            rule.ThenActions.Add(new RuleStatementAction());
-            rule.ElseActions.Add(new RuleStatementAction());
-            ruleSet.Rules.Add(rule);
+            var rules = nRuleSet.Rules.Select(Parse).ToList();
+            rules.ForEach(r => ruleSet.Rules.Add(r));
             return ruleSet;
         }
 
-        private CodeMethodInvokeExpression GetCodeInvocation(string conditionExpression)
+
+        private Rule Parse(NRule nRule)
+        {
+            var rule = new Rule
+            {
+                Active = true,
+                Name = nRule.Name,
+                Condition = new RuleExpressionCondition(GetCodeExpression(nRule.Condition))
+            };
+            nRule.ActionDetails.ForEach(trigger =>
+            {
+                var codeExpression = $"this.Publish(\"Publishing Action :{trigger.Name}\")";
+                rule.ThenActions.Add(new RuleStatementAction(
+                    GetCodeExpression(codeExpression)));
+            });
+            rule.ElseActions.Add(new RuleStatementAction(GetCodeExpression("this.Publish(\"No action required\")")));
+            return rule;
+        }
+
+        private CodeExpression GetCodeExpression(AggregateCondition condition)
+        {
+            throw new NotImplementedException();
+        }
+
+        private CodeMethodInvokeExpression GetCodeExpression(string conditionExpression)
         {
             var methodDetails = GetMethodDetails(conditionExpression);
             
@@ -51,29 +68,30 @@ namespace Rules.Authoring
         private MethodInfo GetMethodDetails(string rule)
         {
            // var rule = "this.HasFactWithEqualValue(\"State\",\"Alarm\")";
-            var invocations = rule.Split('.');
-            var methodNameWithArguments = invocations[1];
-            var indexOfOpeningBrace = methodNameWithArguments.IndexOf("(");
-            var lastIndexOfClosingBrace = methodNameWithArguments.LastIndexOf(")");
-            var methodName = methodNameWithArguments.Substring(0, indexOfOpeningBrace);
-
+            var methodNameWithArguments = rule.Remove(0, "this.".Length);
+            var startIndexOfOpeningBrace = methodNameWithArguments.IndexOf("(", StringComparison.Ordinal);
+            var lastIndexOfClosingBrace = methodNameWithArguments.LastIndexOf(")", StringComparison.Ordinal);
+            var methodName = methodNameWithArguments.Substring(0, startIndexOfOpeningBrace);
             var arguments
-                = methodNameWithArguments.Substring(indexOfOpeningBrace + 1, lastIndexOfClosingBrace - indexOfOpeningBrace);
-
+                = methodNameWithArguments.Substring(startIndexOfOpeningBrace + 1, lastIndexOfClosingBrace - startIndexOfOpeningBrace - 1);
             var methodInfo = new MethodInfo();
             methodInfo.Name = methodName;
             foreach (var argument in arguments.Split(','))
             {
-                methodInfo.Parameters.Add(argument.ToString().Trim('"'));
+                methodInfo.Parameters.Add(argument.Trim('\"'));
             }
             return methodInfo;
         }
 
-        private class MethodInfo
+        internal class MethodInfo
         {
+            internal MethodInfo()
+            {
+                Parameters = new List<object>();
+            }
             internal string Name { get; set; }
 
-            internal  List<object> Parameters { get; set; }
+            internal  List<object> Parameters { get; }
         }
     }
 

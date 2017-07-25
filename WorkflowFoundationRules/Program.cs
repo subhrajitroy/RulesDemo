@@ -11,35 +11,52 @@ namespace WorkflowFoundationRules
 {
     public class Program
     {
-        private static readonly Dictionary<string, string> _rules;
 
-        static Program()
-        {
-            _rules = new Dictionary<string, string> {{"thermostat", "thermostat.rules"}, {"das", "das.rules"}};
-        }
         public static void Main(string[] args)
         {
-            // Obtain or create ruleset
             var fileBaseRulesRepository = new FileBaseRulesRepository();
-            var @event = ReadJsonFromFile(args.Length == 0 ? "das.event.txt":args[0]);
-            var ruleSetName = @event.SourceId;
-            var ruleSetFile = _rules[ruleSetName];
 
-            var facts = new Facts();
-            facts.AddAll(@event.Facts.Select(FromRawFact ));
-
-            if (File.Exists(ruleSetFile))
+            var options = new Options();
+            if (CommandLine.Parser.Default.ParseArguments(args, options))
             {
-                // load file
-                var ruleset = fileBaseRulesRepository.Load(ruleSetFile);
-                var validation = new RuleValidation(typeof(Facts), null);
-                var engine = new RuleExecution(validation, facts);
-                ruleset.Execute(engine);
+                // Values are available here
+                if (options.LaunchUi)
+                {
+                    new RuleAuthoringTool(fileBaseRulesRepository).Create($"{GetRandomFileName()}", typeof(Facts));
+                }
+                else if (options.CreateRuleSetFromFile)
+                {
+                    var graniteRulesFile = options.GraniteRulesFile;
+                    var ruleSet = new FileBasedRuleAuthoringTool(graniteRulesFile).Create();
+                    fileBaseRulesRepository.Save(GetRandomFileName(), ruleSet);
+                }
+                else if (options.RunRule)
+                {
+                    var rulesFile = options.RulesFile;
+                    var rawFacts = ReadJsonFromFile(options.EventsFile);
+                    var facts = new Facts();
+                    facts.AddAll(rawFacts.Facts.Select(FromRawFact));
+                    var ruleset = fileBaseRulesRepository.Load(rulesFile);
+                    var validation = new RuleValidation(typeof(Facts), null);
+                    var engine = new RuleExecution(validation, facts);
+                    ruleset.Execute(engine);
+                }
+                else
+                {
+                    Console.WriteLine(options.GetUsage());
+                }
             }
             else
             {
-                new RuleAuthoringTool(fileBaseRulesRepository).Create(ruleSetFile, typeof(Facts));
+                Console.WriteLine(options.GetUsage());
             }
+        }
+
+        private static string GetRandomFileName()
+        {
+            var guid = Guid.NewGuid();
+            var substring = guid.ToString().Substring(0, 6);
+            return $"{substring}.rules";
         }
 
         private static Fact FromRawFact(RawFact rawFact)

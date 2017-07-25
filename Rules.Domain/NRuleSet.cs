@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using Rules.Authoring;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Rules.Domain
 {
@@ -23,6 +25,11 @@ namespace Rules.Domain
         public string Version { get; set; }
 
         public DateTime LastUpdated { get; set; }
+
+        public override string ToString()
+        {
+            return JsonConvert.SerializeObject(this,Formatting.Indented);
+        }
     }
 
     public class NRule
@@ -45,15 +52,24 @@ namespace Rules.Domain
     {
         public String Name { get; set; }
 
+        public Guid Id { get; set; }
+
+        public Guid ExecutorId { get; set; }
+
+        public ActionType ActionType { get; set; }
+
         public ActionSchedule Schedule { get; set; }
 
-        public IActionDetail ActionDetail { get; set; }
+        public JObject ActionDetail { get; set; }
+
+        public override string ToString()
+        {
+            return JsonConvert.SerializeObject(this);
+        }
     }
 
     public interface IActionDetail
     {
-        ActionType Type { get; }
-
         List<IReceiver> Receivers { get; }
     }
 
@@ -116,6 +132,12 @@ namespace Rules.Domain
 
     public class ActionSchedule
     {
+
+        public ActionSchedule()
+        {
+            StartTime = DateTime.Now;;
+            Frequency = 1;
+        }
         public DateTime StartTime { get; set; }
 
         public int Frequency { get; set; }
